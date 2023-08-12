@@ -3,15 +3,19 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define MAXNUMBEROFFILENAME 160
+#define MAXNUMBEROFFILENAME 100
 
-#define MAXTOKENS 1000
+#define NUMBEROFLABELS 50
 
-#define NUMBEROFLABELS 10
+#define NUMBEROFTEXTLABELS 50
 
-#define NUMBEROFTEXTLABELS 10
+#define LENGTHOFTEXTLABEL 30
 
-#define LENGTHOFTEXTLABEL 160
+#define MAX_VARIABLE_NAME_LENGTH 30
+
+#define DEFAULT_VARIABLES_NUMBER 60
+
+#define POISON 0xDEAD
 
 #define DBG printf("FILE:%s FUNC:%s LINE:%d\n", __FILE__, __FUNCTION__, __LINE__);
 
@@ -50,10 +54,15 @@ struct registers
     type dx = 0;
 };
 
-struct textregs
+struct textLabel
 {
-    char reg_name[LENGTHOFTEXTLABEL] = "\0";
+    char reg_name[NUMBEROFTEXTLABELS] = {};
     int reg_value = -1;
+};
+
+struct variables {
+    char var_name[MAX_VARIABLE_NAME_LENGTH] = "";
+    float var_code = POISON;
 };
 
 struct inputOutputFiles 
@@ -77,7 +86,11 @@ struct inputOutputFiles
 
     int labels[NUMBEROFLABELS];
     struct registers reg;
-    struct textregs* t_reg;
+    struct textLabel* t_reg;
+
+    int current_t_var_size = DEFAULT_VARIABLES_NUMBER;
+    int currentFreeVar = 0;
+    struct variables* t_var;
 };
 
 struct token
@@ -112,7 +125,9 @@ enum commands
     STACKCALL  = 20,
     STACKRET   = 21,
     STACKIN    = 22, 
-    STACKSQRT   = 23
+    STACKSQRT  = 23,
+    STACKVPUSH = 24,
+    STACKVPOP  = 25
 };
 
 char* inttoa(int n, char* s);
@@ -123,11 +138,19 @@ void CoderInit (struct inputOutputFiles* p_files);
 
 int lenFile(FILE *text);
 
+void variablesResize (struct inputOutputFiles* p_files);
+
+void addNewVariable (struct inputOutputFiles* p_files, char* var);
+
 void countLines (struct inputOutputFiles* p_files);
 
 void PreCoding (struct inputOutputFiles* p_files);
 
+float varToCode (struct inputOutputFiles* p_data, char* value) ;
+
 void Coding (struct inputOutputFiles* p_files);
+
+float addLabel (struct inputOutputFiles* p_files, char* label);
 
 int checkNumber (char* st);
 

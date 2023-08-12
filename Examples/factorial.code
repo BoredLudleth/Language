@@ -1,0 +1,21 @@
+funct fact ( x ) {
+   var y = 1 $
+   var z = 1 $
+   while ( z <= x ) {
+      y = y * z $
+      z = z + 1 $
+   }
+
+   return y $
+} /* fact */
+
+main {   /* main */
+   var x = 0 $
+   var y = 0 $
+
+   in x $
+
+   y = fact ( x ) $
+
+   out y $
+}

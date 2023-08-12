@@ -33,6 +33,11 @@ struct registers
     type dx = 0;
 };
 
+struct variables {
+    type value = POISON;
+    int index = POISON;
+};
+
 struct stack 
 {
     float* allProgramm;
@@ -49,6 +54,8 @@ struct stack
     int cur = 0;
 
     struct registers regs;
+
+    struct variables* vars;
 };
 
 
@@ -76,12 +83,10 @@ enum commands {
     STACKCALL  = 20,
     STACKRET   = 21,
     STACKIN    = 22,
-    STACKSQRT  = 23
+    STACKSQRT  = 23,
+    STACKVPUSH = 24,
+    STACKVPOP  = 25
 };
-
-
-
-
 
 struct cpu
 {

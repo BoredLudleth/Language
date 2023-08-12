@@ -37,6 +37,7 @@ void stackDtor (struct stack* stack) {
     int* temp_p = (int*) stack->data;
     stack->data = (type*) (temp_p - 1);
     free (stack->data);
+    free (stack->vars);
 
     stack->filled      = POISON;
     stack->lengthStack = POISON;
@@ -202,19 +203,40 @@ void stackResizeDown (struct stack* stack) {
     free (tmp);
 }
 
+void makeVars (struct stack* stack, int x) {
+    stack->vars = (struct variables*) calloc (x + 1, sizeof(struct variables));
+    for (int i = 0; i < x; i++) {
+        stack->vars[i].index = i;
+    }
+    printf ("i made %d variables\n", x);
+}
+
 
 void stackRead (struct cpu* mycpu, struct stack* stack) {
-    for (stack->cur = 0; stack->cur < stack->sizeOfProgramm; stack->cur++)
+    stack->cur = 0;
+    makeVars (stack, (int) stack->allProgramm[stack->cur]);
+    for (stack->cur = 1; stack->cur < stack->sizeOfProgramm; stack->cur++)
     {
-        printf ("NC\n");
+        // printf ("NC\n");
         if ((int) stack->allProgramm[stack->cur] == STACKPUSH)
         {
             stack->cur++;
             push(stack, stack->allProgramm[stack->cur]);
+            printf ("push\n");
         } else if ((int) stack->allProgramm[stack->cur] == STACKPOP)
         {
             pop(stack);
-        } else if ((int) stack->allProgramm[stack->cur] == STACKADD)
+            printf  ("pop\n");
+        } else if ((int) stack->allProgramm[stack->cur] == STACKVPUSH) {
+            stack->cur++;
+            printf ("pushv %d\n", (int) stack->allProgramm[stack->cur]);
+            pushv (stack, (int) stack->allProgramm[stack->cur]);
+        } else if ((int) stack->allProgramm[stack->cur] == STACKVPOP) {
+            stack->cur++;
+            printf ("popv %d\n", (int) stack->allProgramm[stack->cur]);
+            popv (stack, (int) stack->allProgramm[stack->cur]);
+        }
+         else if ((int) stack->allProgramm[stack->cur] == STACKADD)
         {
             add(stack);
         } else if ((int) stack->allProgramm[stack->cur] == STACKSUB)
@@ -241,6 +263,7 @@ void stackRead (struct cpu* mycpu, struct stack* stack) {
         } else if ((int) stack->allProgramm[stack->cur] == STACKJUMP)
         {
             stack->cur++;
+            printf ("i jumped %d\n", (int) stack->allProgramm[stack->cur]);
             jump(stack, (int) (stack->allProgramm[stack->cur] - 1));
         } else if ((int) stack->allProgramm[stack->cur] == STACKJB)
         {
@@ -278,10 +301,12 @@ void stackRead (struct cpu* mycpu, struct stack* stack) {
             popr(stack, reg);
         } else if ((int) stack->allProgramm[stack->cur] == STACKCALL) {
             stack->cur++;
-            call (mycpu, (int) (stack->allProgramm[stack->cur] - 1));
+            call (mycpu, (int) (stack->allProgramm[stack->cur]));
+            printf ("call\n");
         } else if ((int) stack->allProgramm[stack->cur] == STACKRET) {
             ret (mycpu);
         } else if ((int) stack->allProgramm[stack->cur] == STACKIN) {
+            printf ("in: ");
             in (mycpu);
         } else if ((int) stack->allProgramm[stack->cur] == STACKSQRT) {
             sqr (mycpu);
@@ -292,9 +317,10 @@ void stackRead (struct cpu* mycpu, struct stack* stack) {
         }
 
         print(*stack);
-        printf("\n");
-        printf ("stack::filled:%d\nsize:%d\n", mycpu->stack.filled, mycpu->stack.lengthStack);
-        printf ("funkstack::filled:%d\nsize:%d\n", mycpu->functstack.filled, mycpu->functstack.lengthStack);
+        // printf("\n");
+        // printf ("stack::filled:%d\nsize:%d\n", mycpu->stack.filled, mycpu->stack.lengthStack);
+        // printf ("funkstack::filled:%d\nsize:%d\n", mycpu->functstack.filled, mycpu->functstack.lengthStack);
+        // printf ("next command is %d\n", (int) stack->allProgramm[stack->cur + 1]);
     }
 
     stack->allProgramm -= stack->sizeOfProgramm;

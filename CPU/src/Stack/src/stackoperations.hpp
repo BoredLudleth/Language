@@ -13,9 +13,13 @@ void push(struct stack* stack, type value);
 
 void pushr(struct stack* stack, int indeficator);
 
+void pushv (struct stack* stack, int varIdentity);
+
 type pop (struct stack* stack);
 
 type popr (struct stack* stack, int indeficator);
+
+void popv (struct stack* stack, int varIdentity);
 
 void add (struct stack* stack);
 

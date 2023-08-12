@@ -1,0 +1,49 @@
+funct disqr ( a b c ) {
+   var d = 0 $
+   d = b * b - 4 * a * c $
+
+   return d $
+}
+
+main {
+   var a = 0 $
+   var b = 0 $
+   var c = 0 $
+
+   in a $
+   in b $
+   in c $
+
+   var x1 = 0 $
+   var x2 = 0 $
+
+   var dis =  0 $
+   dis = disqr ( a b c ) $
+   
+   if ( a == 0 ) {
+   	if ( b == 0 ) {
+   		if ( c == 0 ) {
+	   		x1 = -101 $
+	   		x2 = 101 $
+	   		out x1 $
+	   		out x2 $
+	   		x1 = 9 $
+	   		x2 = -9 $
+   		} else {
+   			x1 = 1 / 0 $
+   			x2 = x1 $
+   		} 
+   	} else { 
+   	x1 = ( 0 - c ) / b $
+   	x2 = x1 $
+   	}
+    } else {
+            if ( dis >= 0 ) {
+                x1 = ( ( 0 - 1 ) * b + sqrt ( b * b - 4 * a * c ) ) /  2 / a  $
+                x2 = ( 0 - b - sqrt ( dis ) ) / ( 2 * a ) $
+            }
+    }
+
+   out x1 $
+   out x2 $
+}

@@ -39,6 +39,10 @@ void pushr(struct stack* stack, int indeficator)
     stackCheck (stack);
 }
 
+void pushv (struct stack* stack, int varIdentity) {
+    push (stack, stack->vars[varIdentity].value);
+}
+
 type pop (struct stack* stack) {
     return stackPop (stack);
 }
@@ -70,6 +74,10 @@ type popr (struct stack* stack, int indeficator)
     stackCheck (stack);
 
     return 1;
+}
+
+void popv (struct stack* stack, int varIdentity) {
+    stack->vars[varIdentity].value = pop (stack);
 }
 
 void add (struct stack* stack)
@@ -115,9 +123,9 @@ void div (struct stack* stack)
 
 void out (struct stack* stack)
 {
-    printf ("out:");
+    printf ("\n\nout:");
     printf (TYPE_SPECIFIER, pop(stack));
-    printf ("\n");
+    printf ("\n\n\n");
 }
 
 void print (struct stack stack)
@@ -201,7 +209,7 @@ void jb (struct stack* stack, int i)
     type a = pop (stack);
     type b = pop (stack);
 
-    if (b < a)
+    if (a - b > EPSILON)
     {
         jump(stack, i);
     }
@@ -216,7 +224,7 @@ void jbe (struct stack* stack, int i)
     type a = pop (stack);
     type b = pop (stack);
 
-    if (b <= a)
+    if (a - b > EPSILON || abs(b - a) < EPSILON)
     {
         jump(stack, i);
     }
@@ -231,7 +239,7 @@ void ja (struct stack* stack, int i)
     type a = pop (stack);
     type b = pop (stack);
 
-    if (b > a)
+    if (b - a > EPSILON)
     {
         jump(stack, i);
     }
@@ -247,7 +255,7 @@ void jae (struct stack* stack, int i)
     type a = pop (stack);
     type b = pop (stack);
 
-    if (b >= a)
+    if (b - a > EPSILON || abs(b - a) < EPSILON)
     {
         jump(stack, i);
     }
@@ -288,7 +296,7 @@ void jne (struct stack* stack, int i)
 void call (struct cpu* cpu, int i)
 {
     push (&cpu->functstack, cpu->stack.cur);
-    jump (&cpu->stack, i);
+    jump (&cpu->stack, i - 1);
 }
 
 void ret (struct cpu* cpu)
